@@ -7,6 +7,7 @@ const keys = require('./config/keys');
 
 //Models
 require('./models/User');
+require('./models/Survey');
 
 //Services
 require('./services/passport');
@@ -31,6 +32,7 @@ app.use(passport.session());
 //Routes
 require('./routes/authRoutes')(app);
 require('./routes/billingRoutes')(app);
+require('./routes/surveyRoutes')(app);
 
 // Client Serve in production
 if(process.env.NODE_ENV==="production"){
