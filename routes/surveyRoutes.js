@@ -38,5 +38,8 @@ module.exports = app => {
 
 	});
 
-	app.post("/api/surveys/webhook", (req, resp) => {});
+	app.post("/api/surveys/webhooks", (req, res) => {
+		console.log(req.body);
+		res.send({});
+	});
 };
