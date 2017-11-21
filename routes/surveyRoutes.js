@@ -14,6 +14,11 @@ module.exports = app => {
 		res.send("Thanks for the feedback!");
 	});
 
+	app.get("/api/surveys", requireLogin, async (req, res) => {
+		const surveys = await Survey.find({ _user: req.user.id }).select({recipients: false});
+		res.send(surveys);
+	});
+
 	app.post("/api/surveys", requireLogin, requireCredits, async (req, res) => {
 		const { title, subject, body, recipients } = req.body;
 
@@ -43,13 +48,13 @@ module.exports = app => {
 
 	app.post("/api/surveys/webhooks", (req, res) => {
 		const p = new Path("/api/surveys/:surveyId/:choice");
-		console.log("WEBHOOK",req.body);
+		console.log("WEBHOOK", req.body);
 		_.chain(req.body)
 			.map(({ email, url }) => {
-				console.log("hi",email,url)
+				console.log("hi", email, url);
 				const match = p.test(new URL(url).pathname);
 				if (match) {
-					console.log("hi",match)
+					console.log("hi", match);
 					return { email, ...match };
 				}
 			})
@@ -67,22 +72,22 @@ module.exports = app => {
 					{
 						$inc: { [choice]: 1 },
 						$set: { "recipients.$.responded": true },
-						lastResponded:new Date()
+						lastResponded: new Date()
 					}
 				).exec();
 			});
-			res.send('ok');
+		res.send("ok");
 	});
 };
 
 /*
 [ { ip: '51.52.7.214',
-[0]     sg_event_id: 'P5FbxFN3RuCXoC2BumLlhQ',
-[0]     sg_message_id: 'XX05vULURyiT3P5r0Dv4BQ.filter0017p3iad2-21991-5A141A50-36.0',
-[0]     useragent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
-[0]     event: 'click',
-[0]     url_offset: { index: 0, type: 'html' },
-[0]     email: 'luis.nesi@two-uk.com',
-[0]     timestamp: 1511267323,
-[0]     url: 'http://localhost:3000/api/surveys/5a141a4f4e63bc192051d4a6/yes' } ]
+     sg_event_id: 'P5FbxFN3RuCXoC2BumLlhQ',
+     sg_message_id: 'XX05vULURyiT3P5r0Dv4BQ.filter0017p3iad2-21991-5A141A50-36.0',
+     useragent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36',
+     event: 'click',
+     url_offset: { index: 0, type: 'html' },
+     email: 'luis.nesi@two-uk.com',
+     timestamp: 1511267323,
+     url: 'http://localhost:3000/api/surveys/5a141a4f4e63bc192051d4a6/yes' } ]
 */
