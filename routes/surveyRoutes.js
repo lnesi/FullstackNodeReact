@@ -55,7 +55,7 @@ module.exports = app => {
 				const match = p.test(new URL(url).pathname);
 				if (match) {
 					console.log("hi", match);
-					return { email, ...match };
+					return { email, surveyId: match.surveyId, choice: match.choice };
 				}
 			})
 			.compact()
